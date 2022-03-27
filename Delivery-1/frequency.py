@@ -21,7 +21,7 @@ def export_collocation_by_frequency(bigrams, n=20):
 
     sort_orders = sorted(collocations.items(), key=lambda x: x[1], reverse=True)[:n]
     for item in sort_orders:
-        f.write(str(item[0]) + ' ' + str(item[1]) + '\n')
+        print(str(item[0]) + ' ' + str(item[1]))
 
 
 def get_pos_tag(token):
