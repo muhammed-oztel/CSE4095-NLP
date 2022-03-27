@@ -5,7 +5,7 @@ from typing import Counter
 from zemberek import TurkishTokenizer
 from frequency import export_collocation_by_frequency
 from tqdm import tqdm
-
+from mutual_information import MutualInformation
 
 def parse_data(files, args):
     data = {}
@@ -60,7 +60,8 @@ def main(args):
         if args.method == 'frequency':
             export_collocation_by_frequency(bigrams, n=20)
         elif args.method == 'pmi':
-            pass
+            mutual_information = MutualInformation(data, bigrams)
+            mutual_information.export_collocation_by_pmi()
 
 
 def parse_args():
