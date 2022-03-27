@@ -1,7 +1,10 @@
 import json
 import os
 import argparse
+from typing import Counter
 from zemberek import TurkishTokenizer
+from frequency import export_collocation_by_frequency
+from tqdm import tqdm
 
 
 def parse_data(files, args):
@@ -14,7 +17,7 @@ def parse_data(files, args):
     return data
 
 
-def clean_data(data):
+def export_data(data):
     tokenizer = TurkishTokenizer.DEFAULT
 
     for key in data:
@@ -27,17 +30,34 @@ def clean_data(data):
 
         data[key] = ' '.join(filtered_tokens)
 
-    return data
+    with open('clean_data.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, sort_keys=True, indent=4)
+
+
+def export_bigrams(data):
+    bigrams = Counter()
+    for val in tqdm(data.values()):
+        splitted = val.split()
+        for i in range(len(splitted)-1):
+            bigrams.update([splitted[i] + ' ' + splitted[i+1]])
+
+    with open('bigrams.json', 'w', encoding='utf-8') as f:
+        json.dump(bigrams, f, ensure_ascii=False, sort_keys=True, indent=4)
 
 
 def main(args):
     if args.clean_data:
         data = parse_data(os.listdir(args.raw_data_dir), args)
-        data = clean_data(data)
-        with open('clean_data.json', 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, sort_keys=True, indent=4)
+        export_data(data)        
+        export_bigrams(data)
     else:
-        pass
+        with open('clean_data.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        with open('bigrams.json', 'r', encoding='utf-8') as f:
+            bigrams = json.load(f)
+        
+        export_collocation_by_frequency(bigrams, n=20)
 
 
 def parse_args():
