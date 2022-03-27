@@ -1,7 +1,7 @@
 import json
 import os
-import string
 import argparse
+from zemberek import TurkishTokenizer
 
 
 def parse_data(files, args):
@@ -15,10 +15,17 @@ def parse_data(files, args):
 
 
 def clean_data(data):
+    tokenizer = TurkishTokenizer.DEFAULT
+
     for key in data:
-        data[key] = data[key].translate(str.maketrans(string.punctuation, ' ' * len(string.punctuation))).lower()
-        data[key] = data[key].translate(str.maketrans('', '', string.digits))
-        data[key] = ' '.join(data[key].split())
+        tokens = tokenizer.tokenize(data[key])
+
+        filtered_tokens = []
+        for token in tokens:
+            if token.type_.name != 'Word': continue
+            filtered_tokens.append(token.content.lower())
+
+        data[key] = ' '.join(filtered_tokens)
 
     return data
 
