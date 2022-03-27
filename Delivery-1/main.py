@@ -4,6 +4,7 @@ import argparse
 from typing import Counter
 from zemberek import TurkishTokenizer
 from frequency import export_collocation_by_frequency
+from t_test import export_collocation_by_t_test
 from tqdm import tqdm
 from mutual_information import MutualInformation
 
@@ -62,6 +63,8 @@ def main(args):
         elif args.method == 'pmi':
             mutual_information = MutualInformation(data, bigrams)
             mutual_information.export_collocation_by_pmi()
+        elif args.method == 'ttest':
+            export_collocation_by_t_test(data, bigrams, n=20)
 
 
 def parse_args():
