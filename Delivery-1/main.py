@@ -57,13 +57,17 @@ def main(args):
         with open('bigrams.json', 'r', encoding='utf-8') as f:
             bigrams = json.load(f)
         
-        export_collocation_by_frequency(bigrams, n=20)
+        if args.method == 'frequency':
+            export_collocation_by_frequency(bigrams, n=20)
+        elif args.method == 'pmi':
+            pass
 
 
 def parse_args():
     parser = argparse.ArgumentParser("Collocation Extractor")
     parser.add_argument('--clean_data', type=bool, default=False, help='clean the raw data')
     parser.add_argument('--raw_data_dir', type=str, default='2021-01', help='raw dataset directory')
+    parser.add_argument('--method', type=str, default='frequency', help='method to extract collocations')
     
     return parser.parse_args()
 
