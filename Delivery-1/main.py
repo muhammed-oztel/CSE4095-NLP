@@ -7,6 +7,7 @@ from frequency import export_collocation_by_frequency
 from t_test import export_collocation_by_t_test
 from tqdm import tqdm
 from mutual_information import MutualInformation
+from mean_variance import MeanVariance
 
 def parse_data(files, args):
     data = {}
@@ -65,6 +66,10 @@ def main(args):
             mutual_information.export_collocation_by_pmi()
         elif args.method == 'ttest':
             export_collocation_by_t_test(data, bigrams, n=20)
+        elif args.method == 'meanvar':
+            mv = MeanVariance(data)
+            mv.export_collocations()
+
 
 
 def parse_args():
