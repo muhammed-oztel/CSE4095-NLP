@@ -2,13 +2,13 @@ import json
 import math
    
 class MeanVariance:
-    def __init__(self, data):
+    def __init__(self, data, window_size = 3):
         self.data = data
         self.collocations_offset = {}
         self.collocations_mean = {}
         self.collocations_variance = {}
         self.collocations_std_dev = {}
-        self.find_offsets()
+        self.find_offsets(window_size)
         self.find_means()
         self.find_variance()
         self.find_std_dev()
@@ -17,7 +17,7 @@ class MeanVariance:
         with open(path, 'r', encoding='utf-8') as f:
             self.data = json.load(f)
 
-    def find_offsets(self, window_size = 5):
+    def find_offsets(self, window_size):
         for sent in self.data.values():
             splitted = sent.split(' ')
             sentence_size = len(sent.split(' '))
@@ -45,16 +45,15 @@ class MeanVariance:
             self.collocations_std_dev[key] = math.sqrt(value)
 
     def export_collocations(self, extract_path = 'mean_variance.json'):
-        # Generate a dictionary in given format
+        # Extract the collocations with the standard deviation less than 1
         # {'word1 word2': {'mean': mean, 'variance': variance, 'std_dev': std_dev}}
-        collocation_results = {}
+        collocations_result ={}
         for key, value in self.collocations_std_dev.items():
-            collocation_results[key] = {'mean': self.collocations_mean[key], 'variance': self.collocations_variance[key], 'std_dev': value}  
-
-        # Extract collocations to a json file
+            if value < 0.5:
+                collocations_result[key] = {'mean': self.collocations_mean[key], 'variance': self.collocations_variance[key], 'std_dev': value}  
+        # Export the results
         with open(extract_path, 'w', encoding='utf-8') as f:
-            json.dump(collocation_results, f, ensure_ascii=False, sort_keys=True, indent=4)
-
+            json.dump(collocations_result, f, ensure_ascii=False, indent=4)
 
 ### Simple Example Run ###
 # mv = MeanVariance(data = {
