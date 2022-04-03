@@ -9,6 +9,7 @@ from hypothesis_testing_of_differences import calculate_t_values
 from tqdm import tqdm
 from mutual_information import MutualInformation
 from mean_variance import MeanVariance
+from chi_square_test import PearsonChiSquareTest
 
 
 def parse_data(files, args):
@@ -74,6 +75,9 @@ def main(args):
             mv.export_collocations()
         elif args.method == "hypo":
             calculate_t_values(bigrams)
+        elif args.method == 'chi_square':
+            chi_square = PearsonChiSquareTest(data, bigrams)
+            chi_square.export_collocations_by_chi_square()
 
 
 def parse_args():
