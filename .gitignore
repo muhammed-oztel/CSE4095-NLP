@@ -132,5 +132,4 @@ dmypy.json
 Delivery-1/data/
 
 # Data
-Delivery-1/clean_data.json
-Delivery-1/bigrams.json
+Delivery-1/*.json

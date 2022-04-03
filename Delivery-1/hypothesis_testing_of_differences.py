@@ -14,7 +14,7 @@ def calculate_t_values(bigrams,  n=20):
         tokens = bigram.split()
         v_w_dict[tokens[0]] = {tokens[1]: bigrams[bigram]}
 
-    # print(len(v_w_dict["a"]))
+    del bigrams
 
     # v1 => "a": {"ölünce": 1, "özel": 3, ...} -> len = 725
     # v2 => "aa": {"aynı": 1, "bağlıklı": 1, ...} -> len = 12
@@ -33,17 +33,14 @@ def calculate_t_values(bigrams,  n=20):
                 # calculate the t values by C(v1, w) - C(v2, w) / sqrt(C(v1, w) + C(v2, w)),
                 # where C(x) is times x occurs in the bigrams
                 for w in shorter_dict.keys():
-                    if w in longer_dict.keys():
+                    try:
                         t_value = (
                             shorter_dict[w] - longer_dict[w]) / math.sqrt(shorter_dict[w] + longer_dict[w])
-                    else:
-                        try:
-                            t_value = (shorter_dict[w] - 0) / \
-                                math.sqrt(shorter_dict[w] + 0)
-                        except DivisionByZero:
-                            t_value = 0
-                    collocations[v1 + " " + w + " - " +
-                                 v2 + w] = round(t_value, 2)
+                    except KeyError:
+                        continue
+                    except DivisionByZero:
+                        t_value = 0
+                    collocations[f"{v1} {w} - {v2} {w}"] = round(t_value, 2)
 
     with open('hypo_collocation.json', 'w', encoding='utf-8') as f:
         json.dump(collocations, f, ensure_ascii=False,
