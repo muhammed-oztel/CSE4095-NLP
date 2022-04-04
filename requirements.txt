@@ -2,3 +2,5 @@ tqdm
 numpy
 pandas
 zemberek-python
+transformers[sentencepiece]
+sentence-transformers
