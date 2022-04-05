@@ -5,12 +5,10 @@ from typing import Counter
 from zemberek import TurkishTokenizer
 from frequency import export_collocation_by_frequency
 from t_test import export_collocation_by_t_test
-from hypothesis_testing_of_differences import calculate_t_values
 from tqdm import tqdm
 from mutual_information import MutualInformation
 from mean_variance import MeanVariance
-from chi_square_test import PearsonChiSquareTest
-
+from likelihood_ratios import get_top_bigrams
 
 def parse_data(files, args):
     data = {}
@@ -30,8 +28,7 @@ def export_data(data):
 
         filtered_tokens = []
         for token in tokens:
-            if token.type_.name != 'Word':
-                continue
+            if token.type_.name != 'Word': continue
             filtered_tokens.append(token.content.lower())
 
         data[key] = ' '.join(filtered_tokens)
@@ -54,15 +51,15 @@ def export_bigrams(data):
 def main(args):
     if args.clean_data:
         data = parse_data(os.listdir(args.raw_data_dir), args)
-        export_data(data)
+        export_data(data)        
         export_bigrams(data)
     else:
         with open('clean_data.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
-
+        
         with open('bigrams.json', 'r', encoding='utf-8') as f:
             bigrams = json.load(f)
-
+        
         if args.method == 'frequency':
             export_collocation_by_frequency(bigrams, n=20)
         elif args.method == 'pmi':
@@ -73,22 +70,17 @@ def main(args):
         elif args.method == 'meanvar':
             mv = MeanVariance(data)
             mv.export_collocations()
-        elif args.method == "hypo":
-            calculate_t_values(bigrams)
-        elif args.method == 'chi_square':
-            chi_square = PearsonChiSquareTest(data, bigrams)
-            chi_square.export_collocations_by_chi_square()
+        elif args.method == "likeratio":
+            get_top_bigrams(bigrams, data)
+
 
 
 def parse_args():
     parser = argparse.ArgumentParser("Collocation Extractor")
-    parser.add_argument('--clean_data', type=bool,
-                        default=False, help='clean the raw data')
-    parser.add_argument('--raw_data_dir', type=str,
-                        default='2021-01', help='raw dataset directory')
-    parser.add_argument('--method', type=str, default='frequency',
-                        help='method to extract collocations')
-
+    parser.add_argument('--clean_data', type=bool, default=False, help='clean the raw data')
+    parser.add_argument('--raw_data_dir', type=str, default='2021-01', help='raw dataset directory')
+    parser.add_argument('--method', type=str, default='frequency', help='method to extract collocations')
+    
     return parser.parse_args()
 
 
