@@ -4,7 +4,7 @@ import argparse
 from typing import Counter
 from zemberek import TurkishTokenizer
 from frequency import Frequency
-from t_test import export_collocation_by_t_test
+from t_test import TTest
 from hypothesis_testing_of_differences import calculate_t_values
 from tqdm import tqdm
 from mutual_information import MutualInformation
@@ -92,7 +92,9 @@ def main(args):
             mutual_information.export_collocation_by_pmi(n=20)
 
         elif args.method == 't_test':
-            export_collocation_by_t_test(data, bigrams, n=20)
+            print('\n===== T-TEST =====')
+            t_test = TTest(data, bigrams)
+            t_test.export_collocation_by_t_test(n=20)
 
         elif args.method == 'meanvar':
             mv = MeanVariance(data)
