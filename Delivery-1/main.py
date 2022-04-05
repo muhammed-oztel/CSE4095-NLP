@@ -5,7 +5,7 @@ from typing import Counter
 from zemberek import TurkishTokenizer
 from frequency import Frequency
 from t_test import TTest
-from hypothesis_testing_of_differences import calculate_t_values
+from hypothesis_testing_diff import HypothesisTestingDiff
 from tqdm import tqdm
 from mutual_information import MutualInformation
 from diff_mean_variance import DiffMeanVariance
@@ -101,8 +101,11 @@ def main(args):
             diff_mean_var = DiffMeanVariance(data)
             diff_mean_var.export_collocation_by_diff_mean_var()
 
-        elif args.method == "hypo":
-            calculate_t_values(bigrams)
+        elif args.method == "hypothesis_testing_diff":
+            # we have discarded this method for the time being due to its high computational complexity
+            print('\n===== HYPOTHESIS TESTING DIFFERENCE =====')
+            ht_diff = HypothesisTestingDiff(bigrams)
+            ht_diff.export_collocation_by_hypothesis_testing_diff(n=20)
 
         elif args.method == 'chi_square':
             print('\n===== CHI SQUARE TEST =====')
