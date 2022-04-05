@@ -1,7 +1,6 @@
 import json
 import os
 import argparse
-import random
 from typing import Counter
 from zemberek import TurkishTokenizer
 from frequency import Frequency
@@ -82,9 +81,10 @@ def main(args):
             trigrams = json.load(f)
 
         if args.method == 'frequency':
+            print('\n===== Frequency =====')
             frequency = Frequency(bigrams, trigrams)
-            frequency.export_collocations_by_frequency(type='bigram', n=20)
-            frequency.export_collocations_by_frequency(type='trigram', n=20)
+            frequency.export_collocation_by_frequency(type='bigram', n=20)
+            frequency.export_collocation_by_frequency(type='trigram', n=20)
 
         elif args.method == 'pmi':
             mutual_information = MutualInformation(data, bigrams)
@@ -103,7 +103,7 @@ def main(args):
         elif args.method == 'chi_square':
             print('\n===== CHI SQUARE TEST =====')
             chi_square = PearsonChiSquareTest(data, bigrams)
-            chi_square.export_collocations_by_chi_square()
+            chi_square.export_collocations_by_chi_square(n=20)
 
         elif args.method == "likeratio":
             get_top_bigrams(bigrams, data)
