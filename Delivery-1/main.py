@@ -8,7 +8,7 @@ from t_test import TTest
 from hypothesis_testing_of_differences import calculate_t_values
 from tqdm import tqdm
 from mutual_information import MutualInformation
-from mean_variance import MeanVariance
+from diff_mean_variance import DiffMeanVariance
 from likelihood_ratios import get_top_bigrams
 from chi_square_test import PearsonChiSquareTest
 
@@ -96,9 +96,10 @@ def main(args):
             t_test = TTest(data, bigrams)
             t_test.export_collocation_by_t_test(n=20)
 
-        elif args.method == 'meanvar':
-            mv = MeanVariance(data)
-            mv.export_collocations()
+        elif args.method == 'diff_mean_var':
+            print('\n===== DIFFERENCE OF MEAN AND VARIANCE =====')
+            diff_mean_var = DiffMeanVariance(data)
+            diff_mean_var.export_collocation_by_diff_mean_var()
 
         elif args.method == "hypo":
             calculate_t_values(bigrams)
