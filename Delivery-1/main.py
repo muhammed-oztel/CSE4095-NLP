@@ -39,6 +39,7 @@ def export_data(data, args):
         filtered_tokens = []
         for token in tokens:
             if token.type_.name != 'Word': continue
+            if len(token.content) == 1: continue
             filtered_tokens.append(token.content.lower())
 
         data[key] = ' '.join(filtered_tokens)
