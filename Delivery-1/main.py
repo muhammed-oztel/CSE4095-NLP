@@ -1,3 +1,6 @@
+import warnings
+warnings.simplefilter('ignore')
+
 import json
 import os
 import argparse
@@ -9,7 +12,7 @@ from hypothesis_testing_diff import HypothesisTestingDiff
 from tqdm import tqdm
 from mutual_information import MutualInformation
 from diff_mean_variance import DiffMeanVariance
-from likelihood_ratios import get_top_bigrams
+from likelihood_ratios import LikelihoodRatios
 from chi_square_test import PearsonChiSquareTest
 
 
@@ -112,8 +115,10 @@ def main(args):
             chi_square = PearsonChiSquareTest(data, bigrams)
             chi_square.export_collocations_by_chi_square(n=20)
 
-        elif args.method == "likeratio":
-            get_top_bigrams(bigrams, data)
+        elif args.method == "likelihood_ratios":
+            print('\n===== LIKELIHOOD RATIOS =====')
+            liklihood_ratios = LikelihoodRatios(data, bigrams)
+            liklihood_ratios.export_collocation_by_likelihood_ratios(n=20)
 
 
 def parse_args():
