@@ -81,14 +81,15 @@ def main(args):
             trigrams = json.load(f)
 
         if args.method == 'frequency':
-            print('\n===== Frequency =====')
+            print('\n===== FREQUENCY =====')
             frequency = Frequency(bigrams, trigrams)
             frequency.export_collocation_by_frequency(type='bigram', n=20)
             frequency.export_collocation_by_frequency(type='trigram', n=20)
 
         elif args.method == 'pmi':
+            print('\n===== PMI =====')
             mutual_information = MutualInformation(data, bigrams)
-            mutual_information.export_collocation_by_pmi()
+            mutual_information.export_collocation_by_pmi(n=20)
 
         elif args.method == 't_test':
             export_collocation_by_t_test(data, bigrams, n=20)
