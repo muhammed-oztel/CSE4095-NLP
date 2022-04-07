@@ -10,10 +10,10 @@ class Frequency:
         self.morphology = TurkishMorphology.create_with_defaults()
 
 
-    def export_collocation_by_frequency(self, type='bigram', n=20):
+    def export_collocation_by_frequency(self, type='bigram', n=20): # exports the collocations by frequency
         collocations = {}
 
-        if type == 'bigram':
+        if type == 'bigram': # frequency based on bigrams
             for bigram in tqdm(self.bigrams.keys()):
                 tokens = bigram.split()
                 pos_tags = (self.get_pos_tag(tokens[0]), self.get_pos_tag(tokens[1]))
@@ -21,7 +21,7 @@ class Frequency:
                 if pos_tags[0] + pos_tags[1] in ['NN', 'AN']:
                     collocations[bigram] = self.bigrams[bigram]
 
-        elif type == 'trigram':
+        elif type == 'trigram': # frequency based on trigrams
             for trigram in tqdm(self.trigrams.keys()):
                 tokens = trigram.split()
                 pos_tags = (self.get_pos_tag(tokens[0]), self.get_pos_tag(tokens[1]), self.get_pos_tag(tokens[2]))
@@ -37,7 +37,7 @@ class Frequency:
             json.dump(sort_orders, f, ensure_ascii=False, sort_keys=True, indent=4)
 
 
-    def get_pos_tag(self, token):
+    def get_pos_tag(self, token): # returns the pos tag of a token
         res = self.morphology.analyze(token.strip())
         tags_str = str(res)
 

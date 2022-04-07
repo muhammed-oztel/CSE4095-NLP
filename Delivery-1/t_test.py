@@ -11,7 +11,7 @@ class TTest:
         self.bigrams = bigrams
 
 
-    def export_collocation_by_t_test(self, n=20):
+    def export_collocation_by_t_test(self, n=20): # method to export the collocations by t-test
         collocations = {}
         word_probs = self.get_word_freqs()
         dataset_size = sum(word_probs.values())
@@ -35,7 +35,7 @@ class TTest:
             json.dump(sort_orders, f, ensure_ascii=False, sort_keys=True, indent=4)
 
 
-    def get_word_freqs(self):
+    def get_word_freqs(self): # returns a dictionary of word frequencies
         words = Counter()
         for val in tqdm(self.data.values()):
             splitted = val.split()

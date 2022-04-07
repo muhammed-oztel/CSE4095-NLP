@@ -16,7 +16,7 @@ from likelihood_ratios import LikelihoodRatios
 from chi_square_test import PearsonChiSquareTest
 
 
-def parse_data(files, args):
+def parse_data(files, args): # parse the data and return a dictionary
     data = {}
     pbar = tqdm(files)
     for f_name in pbar:
@@ -28,7 +28,7 @@ def parse_data(files, args):
     return data
 
 
-def export_data(data, args):
+def export_data(data, args): # clean the data and export it
     tokenizer = TurkishTokenizer.DEFAULT
 
     pbar = tqdm(data)
@@ -38,8 +38,8 @@ def export_data(data, args):
 
         filtered_tokens = []
         for token in tokens:
-            if token.type_.name != 'Word': continue
-            if len(token.content) == 1: continue
+            if token.type_.name != 'Word': continue # remove anything which is not a word
+            if len(token.content) == 1: continue # remove anything which is a single character
             filtered_tokens.append(token.content.lower())
 
         data[key] = ' '.join(filtered_tokens)
@@ -48,7 +48,7 @@ def export_data(data, args):
         json.dump(data, f, ensure_ascii=False, sort_keys=True, indent=4)
 
 
-def export_ngrams(n, args):
+def export_ngrams(n, args): # export ngrams based on a given value of n
     data = {}
     with open(f'data/{args.f_name}.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -87,18 +87,18 @@ def main(args):
         if args.method == 'frequency':
             print('\n===== FREQUENCY =====')
             frequency = Frequency(bigrams, trigrams)
-            frequency.export_collocation_by_frequency(type='bigram', n=20)
-            frequency.export_collocation_by_frequency(type='trigram', n=20)
+            frequency.export_collocation_by_frequency(type='bigram', n=200)
+            frequency.export_collocation_by_frequency(type='trigram', n=200)
 
         elif args.method == 'pmi':
             print('\n===== PMI =====')
             mutual_information = MutualInformation(data, bigrams)
-            mutual_information.export_collocation_by_pmi(n=20)
+            mutual_information.export_collocation_by_pmi(n=200)
 
         elif args.method == 't_test':
             print('\n===== T-TEST =====')
             t_test = TTest(data, bigrams)
-            t_test.export_collocation_by_t_test(n=20)
+            t_test.export_collocation_by_t_test(n=200)
 
         elif args.method == 'diff_mean_var':
             print('\n===== DIFFERENCE OF MEAN AND VARIANCE =====')
@@ -109,17 +109,17 @@ def main(args):
             # we have discarded this method for the time being due to its high computational complexity
             print('\n===== HYPOTHESIS TESTING DIFFERENCE =====')
             ht_diff = HypothesisTestingDiff(bigrams)
-            ht_diff.export_collocation_by_hypothesis_testing_diff(n=20)
+            ht_diff.export_collocation_by_hypothesis_testing_diff(n=200)
 
         elif args.method == 'chi_square':
             print('\n===== CHI SQUARE TEST =====')
             chi_square = PearsonChiSquareTest(data, bigrams)
-            chi_square.export_collocations_by_chi_square(n=20)
+            chi_square.export_collocations_by_chi_square(n=200)
 
         elif args.method == "likelihood_ratios":
             print('\n===== LIKELIHOOD RATIOS =====')
             liklihood_ratios = LikelihoodRatios(data, bigrams)
-            liklihood_ratios.export_collocation_by_likelihood_ratios(n=20)
+            liklihood_ratios.export_collocation_by_likelihood_ratios(n=200)
 
 
 def parse_args():
