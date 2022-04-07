@@ -6,10 +6,10 @@ from tqdm import tqdm
 class DiffMeanVariance:
     def __init__(self, data, window_size = 3):
         self.data = data                # Dataset in json format
-        self.collocations_offset = {}   # Extracted collocations with offset
-        self.collocations_mean = {}     # Extracted collocations  mean
-        self.collocations_variance = {} # Extracted collocations variance
-        self.collocations_std_dev = {}  # Extracted collocations standard deviation
+        self.collocations_offset = {}   # to store collocations with offset
+        self.collocations_mean = {}     # to store collocations mean
+        self.collocations_variance = {} # to store collocations variance
+        self.collocations_std_dev = {}  # to store collocations standard deviation
         # Execute the functions to find diff mean and variance
         self.find_offsets(window_size) 
         self.find_means()
