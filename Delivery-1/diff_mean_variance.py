@@ -5,18 +5,20 @@ from tqdm import tqdm
 
 class DiffMeanVariance:
     def __init__(self, data, window_size = 3):
-        self.data = data
-        self.collocations_offset = {}
-        self.collocations_mean = {}
-        self.collocations_variance = {}
-        self.collocations_std_dev = {}
-        self.find_offsets(window_size)
+        self.data = data                # Dataset in json format
+        self.collocations_offset = {}   # to store collocations with offset
+        self.collocations_mean = {}     # to store collocations mean
+        self.collocations_variance = {} # to store collocations variance
+        self.collocations_std_dev = {}  # to store collocations standard deviation
+        # Execute the functions to find diff mean and variance
+        self.find_offsets(window_size) 
         self.find_means()
         self.find_variance()
         self.find_std_dev()
 
 
     def find_offsets(self, window_size):
+        # Find the offset of the collocations with given window size
         for sent in tqdm(self.data.values()):
             splitted = sent.split(' ')
             sentence_size = len(sent.split(' '))
@@ -48,7 +50,7 @@ class DiffMeanVariance:
 
 
     def export_collocation_by_diff_mean_var(self):
-        # Extract the collocations with the standard deviation less than 1
+        # Extract the collocations with the standard deviation less than 0.5
         # {'word1 word2': {'mean': mean, 'variance': variance, 'std_dev': std_dev}}
         collocations_result ={}
         for key, value in self.collocations_std_dev.items():
