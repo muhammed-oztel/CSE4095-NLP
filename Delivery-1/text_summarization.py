@@ -5,7 +5,6 @@ import pandas as pd
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 data_path = "cleaned_data_for_ctm.csv"
-
 data = pd.read_csv(data_path).dropna()
 
 def create_chunks(lst, n):
@@ -13,6 +12,7 @@ def create_chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
+# Loading the pre-trained model
 class Model:
     def __init__(self, model_name):
         self.model_name = model_name
@@ -26,6 +26,7 @@ class Model:
         else:
             texts = [self.WHITESPACE_HANDLER(texts)]
 
+        # Encoding the text
         input_ids = self.tokenizer(
             texts,
             return_tensors="pt",
@@ -34,6 +35,7 @@ class Model:
             max_length=max_input_length
         )["input_ids"]
 
+        # Predicting the output
         output_ids = self.model.generate(
             input_ids=input_ids,
             max_length=max_output_length,
@@ -41,6 +43,7 @@ class Model:
             num_beams=4
         )
 
+        # Decoding the output
         summaries = []
         for output_id in output_ids:
             summaries.append(self.tokenizer.decode(
@@ -51,6 +54,7 @@ class Model:
 
         return summaries
 
+# Creating the model
 model_name = "csebuetnlp/mT5_multilingual_XLSum"
 model = Model(model_name)
 
