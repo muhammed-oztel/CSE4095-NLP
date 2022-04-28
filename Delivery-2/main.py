@@ -9,6 +9,7 @@ from zemberek import TurkishTokenizer
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from logistic_regression import LogisticRegressionModel
+from multi_naive_bayes import MultinomialNaiveBayesModel
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -92,6 +93,13 @@ def main(args):
         if args.model == 'logistic_regression':
             model = LogisticRegressionModel(X_train, y_train, X_test, y_test)
             model.train(hyperparam_tuning=args.hyperparam_tuning)
+            model.predict()
+            model.confusion_matrix(str_labels=list(le.classes_))
+            model.classification_report(str_labels=list(le.classes_))
+        
+        elif args.model == 'multi_naive_bayes':
+            model = MultinomialNaiveBayesModel(X_train, y_train, X_test, y_test)
+            model.train()
             model.predict()
             model.confusion_matrix(str_labels=list(le.classes_))
             model.classification_report(str_labels=list(le.classes_))
