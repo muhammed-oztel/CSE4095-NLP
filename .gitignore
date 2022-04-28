@@ -130,6 +130,6 @@ dmypy.json
 
 # custom dirs
 Delivery-1/data/
-
-# Data
-Delivery-1/*.json
+Delivery-2/data/
+Delivery-3/data/
+Delivery-4/data/
