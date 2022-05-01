@@ -12,7 +12,7 @@ from logistic_regression import LogisticRegressionModel
 from multi_naive_bayes import MultinomialNaiveBayesModel
 from svm import SVMModel
 from sklearn.preprocessing import LabelEncoder
-
+from random_forest import RandomForestModel
 
 def parse_data(files, args): # parse the data and return a dictionary
     data = {}
@@ -111,7 +111,13 @@ def main(args):
             model.predict()
             model.confusion_matrix(str_labels=list(le.classes_))
             model.classification_report(str_labels=list(le.classes_))
-
+        
+        elif args.model == 'random_forest':
+            model = RandomForestModel(X_train, y_train, X_test, y_test)
+            model.train()
+            model.predict()
+            model.confusion_matrix(str_labels=list(le.classes_))
+            model.classification_report(str_labels=list(le.classes_))
 
 def parse_args():
     parser = argparse.ArgumentParser("Crime Classification")
