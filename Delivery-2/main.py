@@ -4,7 +4,6 @@ warnings.simplefilter('ignore')
 import json
 import os
 import argparse
-from typing import Counter
 from zemberek import TurkishTokenizer
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
@@ -12,6 +11,7 @@ from sklearn.metrics import classification_report, ConfusionMatrixDisplay
 from logistic_regression import LogisticRegressionModel
 from multi_naive_bayes import MultinomialNaiveBayesModel
 from svm import SVMModel
+from random_forest import RandomForestModel
 from sklearn.preprocessing import LabelEncoder
 import pickle
 import matplotlib.pyplot as plt
@@ -151,6 +151,10 @@ def main(args):
 
         elif args.model == 'svm':
             model = SVMModel(X, y)
+            model.train(hyperparam_tuning=args.hyperparam_tuning)
+
+        elif args.model == 'random_forest':
+            model = RandomForestModel(X, y)
             model.train(hyperparam_tuning=args.hyperparam_tuning)
 
 
