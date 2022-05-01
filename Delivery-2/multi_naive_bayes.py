@@ -1,49 +1,54 @@
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import classification_report, ConfusionMatrixDisplay
+from sklearn.metrics import f1_score
 from sklearn.feature_extraction.text import TfidfVectorizer
-import matplotlib.pyplot as plt
+from sklearn.model_selection import StratifiedKFold
 import pickle
 import os
+import json
 
 
 class MultinomialNaiveBayesModel:
-    def __init__(self, X_train, y_train, X_test, y_test):
-        self.X_train = X_train
-        self.y_train = y_train
-        self.X_test = X_test
-        self.y_test = y_test
+    def __init__(self, X, y):
+        self.X = X
+        self.y = y
         self.vectorize()
         os.makedirs('results/multi_naive_bayes', exist_ok=True)
 
     def vectorize(self):
+        if os.path.isfile('vectorizer.sav'):
+            self.vectorizer = pickle.load(open('vectorizer.sav', 'rb'))
+            self.X = self.vectorizer.transform(self.X)
+            return
+
         self.vectorizer = TfidfVectorizer()
-        self.X_train = self.vectorizer.fit_transform(self.X_train)
-        self.X_test = self.vectorizer.transform(self.X_test)
+        self.X = self.vectorizer.fit_transform(self.X)        
+        filename = 'vectorizer.sav'
+        pickle.dump(self.vectorizer, open(filename, 'wb'))
 
     def train(self):
-        self.model = MultinomialNB()
-        self.model.fit(self.X_train, self.y_train)
-        filename = f'results/multi_naive_bayes/mnb.sav'
-        pickle.dump(self.model, open(filename, 'wb'))
+        skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+        old_score = 0
+        res = {'results': []}
+        fold = 1
+        for train_index, test_index in skf.split(self.X, self.y):
+            print(f'Fold {fold}')
+            fold += 1
+            model = MultinomialNB()
+            X_train, X_test = self.X[train_index], self.X[test_index]
+            y_train, y_test = self.y[train_index], self.y[test_index]
 
-    def predict(self):
-        self.y_pred = self.model.predict(self.X_test)
+            model.fit(X_train, y_train)
+
+            y_pred = model.predict(X_test)
+            score = f1_score(y_test, y_pred, average='macro')
+            res['results'].append(score)
+            
+            if score > old_score:
+                self.model = model
+                old_score = score
         
-    def confusion_matrix(self, str_labels):
-        disp = ConfusionMatrixDisplay.from_estimator(
-            self.model,
-            self.X_test,
-            self.y_test,
-            display_labels=str_labels,
-            cmap=plt.cm.Blues,
-            normalize=None,
-        )
-        disp.ax_.set_title('Confusion Matrix')
+        with open('results/multi_naive_bayes/results.json', 'w') as f:
+            json.dump(res, f, indent=4)
 
-        plt.xticks(rotation = 90, fontsize=7)
-        plt.yticks(fontsize=7)
-        plt.savefig(f'results/multi_naive_bayes/cm.png', dpi=300, bbox_inches='tight')
-
-    def classification_report(self, str_labels):
-        self.cr = classification_report(self.y_test, self.y_pred, target_names=str_labels)
-        print(self.cr)
+        filename = f'results/multi_naive_bayes/multi_naive_bayes.sav'
+        pickle.dump(self.model, open(filename, 'wb'))

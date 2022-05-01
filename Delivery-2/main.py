@@ -8,11 +8,14 @@ from typing import Counter
 from zemberek import TurkishTokenizer
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, ConfusionMatrixDisplay
 from logistic_regression import LogisticRegressionModel
 from multi_naive_bayes import MultinomialNaiveBayesModel
 from svm import SVMModel
 from sklearn.preprocessing import LabelEncoder
-from random_forest import RandomForestModel
+import pickle
+import matplotlib.pyplot as plt
+
 
 def parse_data(files, args): # parse the data and return a dictionary
     data = {}
@@ -68,6 +71,54 @@ def read_data(filenames, data):
     return X
 
 
+def export_encoded_labels(le):
+    if os.path.isfile('encoded_labels.json'): return
+    
+    with open('encoded_labels.json', 'w', encoding='utf-8') as f:
+        json.dump({'labels': list(le.classes_)}, f, ensure_ascii=False, sort_keys=True, indent=4)
+
+
+def read_splitted_data(args, d_type):
+    with open(f'data/{args.f_name}.json', encoding='utf-8') as f:
+            data = json.load(f)
+
+    with open(f'data/splitted_data.json', 'r', encoding='utf-8') as f:
+        splitted_data = json.load(f)
+    
+    X = read_data(splitted_data[f'X_{d_type}'], data)
+    le = LabelEncoder()
+    le.fit(splitted_data[f'y_{d_type}'])
+    y = le.transform(splitted_data[f'y_{d_type}'])
+    export_encoded_labels(le)
+    return X, y, le
+
+
+def vectorize(X):
+    vectorizer = pickle.load(open('vectorizer.sav', 'rb'))
+    return vectorizer.transform(X)
+
+
+def confusion_matrix(args, model, X_test, y_test, str_labels):
+    disp = ConfusionMatrixDisplay.from_estimator(
+        model,
+        X_test,
+        y_test,
+        display_labels=str_labels,
+        cmap=plt.cm.Blues,
+        normalize=None,
+    )
+    disp.ax_.set_title('Confusion Matrix')
+
+    plt.xticks(rotation = 90, fontsize=7)
+    plt.yticks(fontsize=7)
+    plt.savefig(f'results/{args.model}/cm.png', dpi=300, bbox_inches='tight')
+
+
+def c_report(y_test, y_pred, str_labels):
+    cr = classification_report(y_test, y_pred, target_names=str_labels)
+    print(cr)
+
+
 def main(args):
     if args.clean_data:
         data = parse_data(os.listdir('data/' + args.raw_data_dir), args)
@@ -76,48 +127,32 @@ def main(args):
     elif args.split_data:
         split_dataset()
 
+    elif args.test_model:
+        X, y, le = read_splitted_data(args, 'test')
+        X = vectorize(X)
+        model = pickle.load(open(f'results/{args.model}/{args.model}.sav', 'rb'))
+        confusion_matrix(args, model, X, y, le.classes_)
+        c_report(y, model.predict(X), le.classes_)
+
+        with open('results/' + args.model + '/' + args.model + '.txt', 'w', encoding='utf-8') as f:
+            for label in le.inverse_transform(model.predict(X)):
+                f.write(label + '\n')
+
     else:
-        with open(f'data/{args.f_name}.json', encoding='utf-8') as f:
-            data = json.load(f)
-
-        with open(f'data/splitted_data.json', 'r', encoding='utf-8') as f:
-            splitted_data = json.load(f)
-        
-        X_train = read_data(splitted_data['X_train'], data)
-        X_test = read_data(splitted_data['X_test'], data)
-
-        le = LabelEncoder()
-        le.fit(splitted_data['y_train'])
-        y_train = le.transform(splitted_data['y_train'])
-        y_test = le.transform(splitted_data['y_test'])
+        X, y, _ = read_splitted_data(args, 'train')
 
         if args.model == 'logistic_regression':
-            model = LogisticRegressionModel(X_train, y_train, X_test, y_test)
+            model = LogisticRegressionModel(X, y)
             model.train(hyperparam_tuning=args.hyperparam_tuning)
-            model.predict()
-            model.confusion_matrix(str_labels=list(le.classes_))
-            model.classification_report(str_labels=list(le.classes_))
         
         elif args.model == 'multi_naive_bayes':
-            model = MultinomialNaiveBayesModel(X_train, y_train, X_test, y_test)
+            model = MultinomialNaiveBayesModel(X, y)
             model.train()
-            model.predict()
-            model.confusion_matrix(str_labels=list(le.classes_))
-            model.classification_report(str_labels=list(le.classes_))
 
         elif args.model == 'svm':
-            model = SVMModel(X_train, y_train, X_test, y_test)
+            model = SVMModel(X, y)
             model.train(hyperparam_tuning=args.hyperparam_tuning)
-            model.predict()
-            model.confusion_matrix(str_labels=list(le.classes_))
-            model.classification_report(str_labels=list(le.classes_))
-        
-        elif args.model == 'random_forest':
-            model = RandomForestModel(X_train, y_train, X_test, y_test)
-            model.train()
-            model.predict()
-            model.confusion_matrix(str_labels=list(le.classes_))
-            model.classification_report(str_labels=list(le.classes_))
+
 
 def parse_args():
     parser = argparse.ArgumentParser("Crime Classification")
@@ -127,6 +162,7 @@ def parse_args():
     parser.add_argument('--split_data', type=bool, default=False, help='split the dataset (training, test)')
     parser.add_argument('--model', type=str, default='logistic_regression', help='learning model')
     parser.add_argument('--hyperparam_tuning', type=bool, default=False, help='hyperparameter tuning')
+    parser.add_argument('--test_model', type=bool, default=False, help='evaluate model on test data')
     return parser.parse_args()
 
 
