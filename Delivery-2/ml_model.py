@@ -39,7 +39,7 @@ class MLModel:
             pickle.dump(self.model, f)
 
     def _hyperparameter_tuning(self):
-        self.gs = GridSearchCV(self.model, self.parameters, cv=10, scoring='f1_macro')
+        self.gs = GridSearchCV(self.model, self.parameters, cv=10, scoring='f1_macro', n_jobs=-1)
         self.gs.fit(self.X, self.y)
 
         self.model = self.gs.best_estimator_
