@@ -8,10 +8,7 @@ from zemberek import TurkishTokenizer
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, ConfusionMatrixDisplay
-from logistic_regression import LogisticRegressionModel
-from multi_naive_bayes import MultinomialNaiveBayesModel
-from svm import SVMModel
-from random_forest import RandomForestModel
+from ml_models import MultinomialNaiveBayesModel, LogisticRegressionModel, RandomForestModel, SVMModel
 from sklearn.preprocessing import LabelEncoder
 import pickle
 import matplotlib.pyplot as plt
@@ -49,7 +46,7 @@ def export_data(data, args): # clean the data and export it
         json.dump(data, f, ensure_ascii=False, sort_keys=True, indent=4)
 
 
-def split_dataset(training_ratio=0.8, test_ratio=0.2):
+def split_dataset(test_ratio=0.2):
     with open('data/labels.json', encoding='utf-8') as f:
         labels = json.load(f)
 
@@ -142,20 +139,20 @@ def main(args):
         X, y, _ = read_splitted_data(args, 'train')
 
         if args.model == 'logistic_regression':
-            model = LogisticRegressionModel(X, y)
-            model.train(hyperparam_tuning=args.hyperparam_tuning)
+            model = LogisticRegressionModel(X, y, args.model, args.hyperparam_tuning)
+            model.train()
         
         elif args.model == 'multi_naive_bayes':
-            model = MultinomialNaiveBayesModel(X, y)
+            model = MultinomialNaiveBayesModel(X, y, args.model)
             model.train()
 
         elif args.model == 'svm':
-            model = SVMModel(X, y)
-            model.train(hyperparam_tuning=args.hyperparam_tuning)
+            model = SVMModel(X, y, args.model, args.hyperparam_tuning)
+            model.train()
 
         elif args.model == 'random_forest':
-            model = RandomForestModel(X, y)
-            model.train(hyperparam_tuning=args.hyperparam_tuning)
+            model = RandomForestModel(X, y, args.model, args.hyperparam_tuning)
+            model.train()
 
 
 def parse_args():
