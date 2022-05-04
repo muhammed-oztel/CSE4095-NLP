@@ -156,6 +156,14 @@ def main(args):
             model = RandomForestModel(X, y, args.model)
             model.train()
 
+        elif args.model == 'ada_boost':
+            model = AdaBoostModel(X, y, args.model)
+            model.train()
+
+        elif args.model == 'mvoting':
+            model = MVotingModel(X, y, args.model)
+            model.train()
+
 
 def parse_args():
     parser = argparse.ArgumentParser("Crime Classification")
