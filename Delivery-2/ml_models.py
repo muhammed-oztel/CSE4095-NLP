@@ -1,6 +1,6 @@
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, MajorityVoteClassifier
 from sklearn.svm import SVC
 from ml_model import MLModel 
 
@@ -11,7 +11,6 @@ class MultinomialNaiveBayesModel(MLModel):
         self.model = MultinomialNB()
         self.parameters = {}
 
-
 class LogisticRegressionModel(MLModel):
     def __init__(self, X, y, model_name):
         super().__init__(X, y, model_name)
@@ -21,9 +20,8 @@ class LogisticRegressionModel(MLModel):
 class RandomForestModel(MLModel):
     def __init__(self, X, y, model_name):
         super().__init__(X, y, model_name)
-        self.model = RandomForestClassifier(n_estimators=2000, n_jobs=-1, warm_start=True, random_state=42)
-        self.parameters = {'n_estimators': [500, 1000, 1500, 2000], 'criterion': ('gini', 'entropy')}
-
+        self.model = RandomForestClassifier(n_estimators=100, n_jobs=-1, warm_start=True, random_state=42)
+        self.parameters = {'n_estimators': [100 ,200, 500, 1000], 'criterion': ('gini', 'entropy')}
 
 class SVMModel(MLModel):
     def __init__(self, X, y, model_name):
