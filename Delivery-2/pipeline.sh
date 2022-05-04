@@ -25,3 +25,13 @@ python main.py --model multi_naive_bayes --test_model True
 python main.py --model random_forest
 # evaluate random forest model on test set
 python main.py --model random_forest --test_model True
+
+# perform ada_boost
+python main.py --model ada_boost
+# evaluate ada_boost model on test set
+python main.py --model ada_boost --test_model True
+
+# perform mvoting
+python main.py --model mvoting
+# evaluate mvoting model on test set
+python main.py --model mvoting --test_model True

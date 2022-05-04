@@ -3,6 +3,7 @@ from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.metrics import f1_score
 from sklearn.model_selection import ParameterGrid
 from tqdm import tqdm
+from multiprocessing import Pool
 
 import pickle
 import os
@@ -58,22 +59,26 @@ class MLModel:
         filename = f'results/{self.model_name}/{self.model_name}_cv_results.json'
         with open(filename, 'w') as f:
             json.dump({'results':self.cv_results.tolist()}, f)
+
+    def multi_process_train(self, params):
+        model = self.model.set_params(**params)
+        model.fit(self.X[self.train_index], self.y[self.train_index])
+        score = f1_score(self.y[self.test_index], model.predict(self.X[self.test_index]), average='macro')
+
+        return model, score
         
     def GridSearch(self):
-        best_model, best_score = None, 0
 
         skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
         for train_index, test_index in skf.split(self.X, self.y):
+            self.train_index, self.test_index = train_index, test_index
             break
 
-        grid_search = ParameterGrid(self.parameters)
-        for params in tqdm(grid_search):
-            model = self.model.set_params(**params)
-            model.fit(self.X[train_index], self.y[train_index])
-            score = f1_score(self.y[test_index], model.predict(self.X[test_index]), average='macro')
-            if score > best_score:
-                best_model = model
-                best_score = score
+        self.grid_search = ParameterGrid(self.parameters)
+        with Pool(processes=os.cpu_count()//2) as pool:
+            results = pool.map(self.multi_process_train, self.grid_search)
+
+        best_model, best_score = max(results, key=lambda x: x[1])
 
         self.model = best_model
 
