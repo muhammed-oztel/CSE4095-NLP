@@ -1,6 +1,6 @@
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, MajorityVoteClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from ml_model import MLModel 
 
