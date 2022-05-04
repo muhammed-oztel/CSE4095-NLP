@@ -9,6 +9,7 @@ class MultinomialNaiveBayesModel(MLModel):
     def __init__(self, X, y, model_name, hyperparam_tuning=False):
         super().__init__(X, y, model_name, hyperparam_tuning)
         self.model = MultinomialNB()
+        self.parameters = {}
 
 
 class LogisticRegressionModel(MLModel):

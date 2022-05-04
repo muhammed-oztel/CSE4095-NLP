@@ -91,7 +91,8 @@ def read_splitted_data(args, d_type):
 
 
 def vectorize(X):
-    vectorizer = pickle.load(open('vectorizer.sav', 'rb'))
+    with open('vectorizer.h5', 'rb') as f:
+        vectorizer = pickle.load(f)
     return vectorizer.transform(X)
 
 
@@ -127,7 +128,8 @@ def main(args):
     elif args.test_model:
         X, y, le = read_splitted_data(args, 'test')
         X = vectorize(X)
-        model = pickle.load(open(f'results/{args.model}/{args.model}.sav', 'rb'))
+        with open(f"results/{args.model}/{args.model}.h5", 'rb') as f:
+            model = pickle.load(f)
         confusion_matrix(args, model, X, y, le.classes_)
         c_report(y, model.predict(X), le.classes_)
 
@@ -139,7 +141,7 @@ def main(args):
         X, y, _ = read_splitted_data(args, 'train')
 
         if args.model == 'logistic_regression':
-            model = LogisticRegressionModel(X, y, args.model, args.hyperparam_tuning)
+            model = LogisticRegressionModel(X, y, args.model)
             model.train()
         
         elif args.model == 'multi_naive_bayes':
@@ -147,11 +149,11 @@ def main(args):
             model.train()
 
         elif args.model == 'svm':
-            model = SVMModel(X, y, args.model, args.hyperparam_tuning)
+            model = SVMModel(X, y, args.model)
             model.train()
 
         elif args.model == 'random_forest':
-            model = RandomForestModel(X, y, args.model, args.hyperparam_tuning)
+            model = RandomForestModel(X, y, args.model)
             model.train()
 
 
@@ -162,7 +164,6 @@ def parse_args():
     parser.add_argument('--f_name', type=str, default='dataset', help='file name')
     parser.add_argument('--split_data', type=bool, default=False, help='split the dataset (training, test)')
     parser.add_argument('--model', type=str, default='logistic_regression', help='learning model')
-    parser.add_argument('--hyperparam_tuning', type=bool, default=False, help='hyperparameter tuning')
     parser.add_argument('--test_model', type=bool, default=False, help='evaluate model on test data')
     return parser.parse_args()
 
