@@ -8,7 +8,7 @@ from zemberek import TurkishTokenizer
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, ConfusionMatrixDisplay
-from ml_models import MultinomialNaiveBayesModel, LogisticRegressionModel, RandomForestModel, SVMModel
+from ml_models import *
 from sklearn.preprocessing import LabelEncoder
 import pickle
 import matplotlib.pyplot as plt

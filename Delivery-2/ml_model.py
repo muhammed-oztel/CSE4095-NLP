@@ -1,5 +1,9 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import GridSearchCV, cross_val_score, StratifiedKFold
+from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.metrics import f1_score
+from sklearn.model_selection import ParameterGrid
+from tqdm import tqdm
+
 import pickle
 import os
 import json
@@ -54,19 +58,28 @@ class MLModel:
         filename = f'results/{self.model_name}/{self.model_name}_cv_results.json'
         with open(filename, 'w') as f:
             json.dump({'results':self.cv_results.tolist()}, f)
+        
+    def GridSearch(self):
+        best_model, best_score = None, 0
 
-    def train(self):
         skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
         for train_index, test_index in skf.split(self.X, self.y):
             break
 
-        self.gs = GridSearchCV(self.model, self.parameters, cv=zip(train_index, test_index), scoring='f1_macro', n_jobs=-1)
-        self.gs.fit(self.X, self.y)
-        self.best_params = self.gs.best_params_
-        self.save_best_params()
-        self.model = self.gs.best_estimator_
+        grid_search = ParameterGrid(self.parameters)
+        for params in tqdm(grid_search):
+            model = self.model.set_params(**params)
+            model.fit(self.X[train_index], self.y[train_index])
+            score = f1_score(self.y[test_index], model.predict(self.X[test_index]), average='macro')
+            if score > best_score:
+                best_model = model
+                best_score = score
+
+        self.model = best_model
+
+    def train(self):
+        self.GridSearch()
         self.save_model()
 
-        self.cv_results = cross_val_score(self.gs.best_estimator_, self.X, self.y, cv=10, scoring='f1_macro', verbose=4)
+        self.cv_results = cross_val_score(self.model, self.X, self.y, cv=10, scoring='f1_macro', n_jobs=-1, verbose=4)
         self.save_cv_results()
-
