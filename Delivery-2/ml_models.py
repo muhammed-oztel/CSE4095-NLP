@@ -40,13 +40,16 @@ class MVotingModel(MLModel):
     def __init__(self, X, y, model_name):
         super().__init__(X, y, model_name)
         self.model_name = "logistic_regression"
-        lr = self.load_model()
+        self.load_model()
+        lr = self.model
 
         self.model_name = "svm"
-        svm = self.load_model()
+        self.load_model()
+        svm = self.model
 
         self.model_name = "random_forest"
-        rf = self.load_model()
+        self.load_model()
+        rf = self.model
 
-        self.model = VotingClassifier(estimators=[('lr', lr), ('svm', svm), ('rf', rf)], voting='soft')
-        self.parameters = {'voting': ('soft', 'hard')}
+        self.model = VotingClassifier(estimators=[('lr', lr), ('svm', svm), ('rf', rf)], voting='hard')
+        self.parameters = {}
