@@ -75,7 +75,8 @@ class MLModel:
             break
 
         self.grid_search = ParameterGrid(self.parameters)
-        with Pool(processes=os.cpu_count()) as pool:
+        processes = min(len(self.grid_search), os.cpu_count())
+        with Pool(processes=processes) as pool:
             results = pool.map(self.multi_process_train, self.grid_search)
 
         best_model, best_score = max(results, key=lambda x: x[1])
