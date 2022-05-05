@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# # clean and tokenize the dataset
-# python main.py --clean_data True --raw_data_dir 2021-01 --f_name dataset
+# clean and tokenize the dataset
+python main.py --clean_data True --raw_data_dir 2021-01 --f_name dataset
 
-# # split data into training and test sets
-# python main.py --split_data True
+# split data into training and test sets
+python main.py --split_data True
 
 # perform logistic regression
 python main.py --model logistic_regression

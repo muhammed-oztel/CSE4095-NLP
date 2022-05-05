@@ -1,6 +1,6 @@
 Delivery 2: Text Classification using traditional ML models
 ==================
-In the second delivery of the term project, we will be working on text classification using simple and traditional machine learning algorithms. The implemented models include Logistic Regression, Support Vector Machines, Multinomial Naive Bayes, Random Forest, and Ensemble Methods.
+In the second delivery of the term project, we will be working on text classification using simple and traditional machine learning algorithms. The implemented models include Logistic Regression, Support Vector Machines, Multinomial Naive Bayes, Random Forest, AdaBoost, and Majority Voting.
 
 How to execute the scripts?
 ------------------
