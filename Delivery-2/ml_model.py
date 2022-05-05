@@ -15,7 +15,7 @@ class MLModel:
         self.y = y
         self.model_name = model_name
         self.parameters = None
-        self.load_model()
+        self.model = self.load_model(self.model_name)
         self.vectorize()
         os.makedirs(f'results/{model_name}', exist_ok=True)
 
@@ -48,12 +48,14 @@ class MLModel:
         with open(filename, 'wb') as f:
             pickle.dump(self.model, f)
 
-    def load_model(self):
-        filename = f'results/{self.model_name}/{self.model_name}.h5'
+    def load_model(self, model_name):
+        filename = f'results/{model_name}/{model_name}.h5'
 
         if os.path.isfile(filename):
             with open(filename, 'rb') as f:
-                self.model = pickle.load(f)
+                model = pickle.load(f)
+
+            return model
 
     def save_cv_results(self):
         filename = f'results/{self.model_name}/{self.model_name}_cv_results.json'
