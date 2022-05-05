@@ -39,17 +39,11 @@ class AdaBoostModel(MLModel):
 class MVotingModel(MLModel):
     def __init__(self, X, y, model_name):
         super().__init__(X, y, model_name)
-        self.model_name = "logistic_regression"
-        self.load_model()
-        lr = self.model
+        lr = self.load_model("logistic_regression")
+        svm = self.load_model("svm")
+        svm.probability = True
 
-        self.model_name = "svm"
-        self.load_model()
-        svm = self.model
+        rf = self.load_model("random_forest")
 
-        self.model_name = "random_forest"
-        self.load_model()
-        rf = self.model
-
-        self.model = VotingClassifier(estimators=[('lr', lr), ('svm', svm), ('rf', rf)], voting='hard')
-        self.parameters = {}
+        self.model = VotingClassifier(estimators=[('lr', lr), ('svm', svm), ('rf', rf)], voting='soft')
+        self.parameters = {"voting": ('hard', 'soft')}
