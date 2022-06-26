@@ -9,6 +9,3 @@ Department of Computer Engineering, Marmara University, Istanbul, Turkey
 * Yunus Ahmed Stahlschmidt ([@YunusStahlschmidt](https://github.com/YunusStahlschmidt))
 * Huzeyfe Ayaz ([@HuzeyfeAyaz](https://github.com/HuzeyfeAyaz))
 * Sameeh N. O. Kunbargi ([@SamNK](https://github.com/SamNK))
-
-## Supervisor:
-* Dr. Murat Can Ganiz ([@mcganiz](https://github.com/mcganiz))
